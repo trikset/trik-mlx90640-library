@@ -17,8 +17,10 @@
 #ifndef _MLX640_API_H_
 #define _MLX640_API_H_
 
+#include <cinttypes>
+
 #define SCALEALPHA 0.000001
-    
+
 typedef struct
     {
         int16_t kVdd;
@@ -73,8 +75,6 @@ typedef struct
     int MLX90640_CheckInterrupt(uint8_t slaveAddr);
     void MLX90640_StartMeasurement(uint8_t slaveAddr, uint8_t subPage);
     int MLX90640_GetData(uint8_t slaveAddr, uint16_t *frameData);
-    int MLX90640_DumpEE(uint8_t slaveAddr, uint16_t *eeData);
-    int MLX90640_GetFrameData(uint8_t slaveAddr, uint16_t *frameData);
     int MLX90640_InterpolateOutliers(uint16_t *frameData, uint16_t *eepromData);
 
 #endif

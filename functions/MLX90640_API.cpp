@@ -91,7 +91,6 @@ int MLX90640_InterpolateOutliers(uint16_t *frameData, uint16_t *eepromData)
 {
     for(int x = 0; x < 768; x++){
         int broken = eepromData[64 + x] == 0;
-        int outlier = eepromData[64 + x] & 0x0001;
         if (broken){
             float val = 0;
             int count = 0;
@@ -884,15 +883,7 @@ void ExtractPTATParameters(uint16_t *eeData, paramsMLX90640 *mlx90640)
 
 void ExtractGainParameters(uint16_t *eeData, paramsMLX90640 *mlx90640)
 {
-    int16_t gainEE;
-
-    gainEE = eeData[48];
-    if(gainEE > 32767)
-    {
-        gainEE = gainEE -65536;
-    }
-
-    mlx90640->gainEE = gainEE;
+    mlx90640->gainEE = (eeData[48] > 32767) ? eeData[48] - 65536 : eeData[48];
 }
 
 //------------------------------------------------------------------------------
@@ -1090,11 +1081,7 @@ void ExtractOffsetParameters(uint16_t *eeData, paramsMLX90640 *mlx90640)
     occRemScale = (eeData[16] & 0x000F);
     occColumnScale = (eeData[16] & 0x00F0) >> 4;
     occRowScale = (eeData[16] & 0x0F00) >> 8;
-    offsetRef = eeData[17];
-    if (offsetRef > 32767)
-    {
-        offsetRef = offsetRef - 65536;
-    }
+    offsetRef = (eeData[17] > 32767) ? eeData[17] - 65536: eeData[17];
 
     for(int i = 0; i < 6; i++)
     {
@@ -1162,32 +1149,22 @@ void ExtractKtaPixelParameters(uint16_t *eeData, paramsMLX90640 *mlx90640)
     float ktaTemp[768];
     float temp;
 
-    KtaRoCo = (eeData[54] & 0xFF00) >> 8;
-    if (KtaRoCo > 127)
-    {
-        KtaRoCo = KtaRoCo - 256;
-    }
+    uint8_t tempByte;
+
+    tempByte = (eeData[54] & 0xFF00) >> 8;
+    KtaRoCo = (tempByte > 127) ? tempByte - 256 : tempByte;
     KtaRC[0] = KtaRoCo;
 
-    KtaReCo = (eeData[54] & 0x00FF);
-    if (KtaReCo > 127)
-    {
-        KtaReCo = KtaReCo - 256;
-    }
+    tempByte = (eeData[54] & 0x00FF);
+    KtaReCo = (tempByte > 127) ? tempByte - 256 : tempByte;
     KtaRC[2] = KtaReCo;
 
-    KtaRoCe = (eeData[55] & 0xFF00) >> 8;
-    if (KtaRoCe > 127)
-    {
-        KtaRoCe = KtaRoCe - 256;
-    }
+    tempByte = (eeData[55] & 0xFF00) >> 8;
+    KtaRoCe = (tempByte > 127) ? tempByte - 256 : tempByte;
     KtaRC[1] = KtaRoCe;
 
-    KtaReCe = (eeData[55] & 0x00FF);
-    if (KtaReCe > 127)
-    {
-        KtaReCe = KtaReCe - 256;
-    }
+    tempByte = (eeData[55] & 0x00FF);
+    KtaReCe = (tempByte > 127) ? tempByte - 256 : tempByte;
     KtaRC[3] = KtaReCe;
 
     ktaScale1 = ((eeData[56] & 0x00F0) >> 4) + 8;
